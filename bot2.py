@@ -1,5 +1,10 @@
+ # -*- coding: utf-8 -*-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import re, collections, os, random
+import re, collections, os, random, sys, locale
+from importlib import reload
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 def corpus_maker():
     corpus = []
