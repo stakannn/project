@@ -14,7 +14,7 @@ def corpus_maker():
             corpus.append(context)
     return corpus
 
-#def requesting(request):
+#def requesting():
     #request = input('Введите слово: ')
     #request = re.sub('(.*)', r' \1', request)
     #request = request.lower()
@@ -71,9 +71,14 @@ def improver(context_s, request):
     freq_s.reverse()
     freq_s = freq_s[0:4]
     top5words = []
+    print_ = ''
     for i in freq_s:
         top5words.append(top[i])
-        print_ = i + ':' + top[i]
+        #print(i, ':', top[i])
+        print_ += str(i) + ':' + str(top[i])
+    return print_
+
+def improver2(context_s, top5words):
     top5words = str(top5words)
     top5words = re.findall('[\wöäÖÄ]+', top5words)        
     context_s = context_s.split('\n')
@@ -83,7 +88,6 @@ def improver(context_s, request):
             if word in context:
                 if not context in good_context_s:
                      good_context_s.append(context)
-    
     return good_context_s
 
 def printer(good_context_s):
@@ -100,62 +104,51 @@ def printer(good_context_s):
 
 def messager(request):
     corpus = corpus_maker()
-    while True:
-        #request = requesting(message.text)
-        context_s = contexting(corpus, request)
-        if len(context_s) == 0:
-            print('Результатов не найдено')
-            pass
+    context_s = contexting(corpus, request)
+    if len(context_s) == 0:
+        answer = 'Результатов не найдено'
+    else:
+        badwords = {' и ': ' ja ' ,' я ': ' minä ',' ты ': ' sinä ',' он ': ' hän ',' она ': ' hän ',
+                ' мы ': ' me ',' вы ': ' te ',' они ': ' he ',' был ': ' oli ',' была ': ' oli ',
+                ' были ': ' olivat ',' его ': ' hänellä ',' её ': ' hänellä ',' Кирила ': ' Kirila ',
+                ' Петрович ': ' Petrovitsch ',' Дубровский ': ' Dubrovskij ',' Мария ': ' Maria ',
+                ' Владимир ': ' Vladimir ',' но ': ' mutta ',' не ': ' ei ',' есть ': ' on ',
+                ' что ': ' että ',' с ': ' kanssa ',' (не) был(а) ': ' ole ',' его ': ' hänen ',' её ': ' hänen '}
+        if request in badwords:
+            good_context_s = bad(context_s, request)
         else:
-            badwords = {' и ': ' ja ' ,' я ': ' minä ',' ты ': ' sinä ',' он ': ' hän ',' она ': ' hän ',
-                    ' мы ': ' me ',' вы ': ' te ',' они ': ' he ',' был ': ' oli ',' была ': ' oli ',
-                    ' были ': ' olivat ',' его ': ' hänellä ',' её ': ' hänellä ',' Кирила ': ' Kirila ',
-                    ' Петрович ': ' Petrovitsch ',' Дубровский ': ' Dubrovskij ',' Мария ': ' Maria ',
-                    ' Владимир ': ' Vladimir ',' но ': ' mutta ',' не ': ' ei ',' есть ': ' on ',
-                    ' что ': ' että ',' с ': ' kanssa ',' (не) был(а) ': ' ole ',' его ': ' hänen ',' её ': ' hänen '}
-            if request in badwords:
-                good_context_s = bad(context_s, request)
-            else:
-                good_context_s = improver(context_s, request)
-            answer = printer(good_context_s, print_)
+            good_context_s = improver(context_s, request)
+        answer = printer(good_context_s, print_)
     return answer
 
 TOKEN = '1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo'
-PORT = int(os.environ.get('PORT', '8443'))
-HEROKU_APPNAME = 'suomibot'
+#PORT = int(os.environ.get('PORT', '8443'))
+#HEROKU_APPNAME = 'suomibot'
 
 def command_start(update, context):
     update.message.reply_text('Привет! Напиши слово на русском!')
-
-
+    
 def handler_echo(update, context):
     request = re.sub('(.*)', r' \1', update.message.text)
     request = request.lower()
     towrite = messager(request)
-    #message = 'Вы спросили у меня: ' + update.message.text
-    #message += '\nА я вам отвечу: ' + update.towrite.text
-    update.message.reply_text(towrite)
-
+    update.message.reply_text('towrite')
 
 def main():
-    
-        proxy_settings = {
-            'proxy_url': 'socks5://ss-02.s5.ynvv.cc:999',
-            'urllib3_proxy_kwargs': {
-                'username': '506259567',
-                'password': 'MW2YFlKX'
-            }
-        }
-        updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True, request_kwargs=proxy_settings)
-        dp = updater.dispatcher
-        dp.add_handler(CommandHandler('start', command_start))
-        dp.add_handler(MessageHandler(Filters.text, handler_echo))
-        updater.start_polling()
-
-        #updater.start_webhook(listen='0.0.0.0', port=PORT, url_path='1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo')
-        #updater.bot.set_webhook(f'https://{suomicorpusbot}.herokuapp.com/{1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo}')
-        
-        updater.idle()
+    #proxy_settings = {
+    #    'proxy_url': 'socks5://ss-02.s5.ynvv.cc:999',
+    #    'urllib3_proxy_kwargs': {
+    #        'username': '506259567',
+    #        'password': 'MW2YFlKX'
+    #    }
+    #}
+    #updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True, request_kwargs=proxy_settings)
+    updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True)
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler('start', command_start))
+    dp.add_handler(MessageHandler(Filters.text, handler_echo))
+    updater.start_polling()   
+    updater.idle()
 
 if __name__ == '__main__':
     main()
