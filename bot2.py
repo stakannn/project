@@ -118,11 +118,13 @@ def messager(request):
             good_context_s = bad(context_s, request)
         else:
             good_context_s = improver(context_s, request)
-        answer = printer(good_context_s, print_)
+        top5words = improver(context_s, request)
+        good_context_s = improver2(context_s, top5words)
+        answer = printer(good_context_s)
     return answer
 
 TOKEN = '1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo'
-#PORT = int(os.environ.get('PORT', '8443'))
+PORT = int(os.environ.get('PORT', '8443'))
 #HEROKU_APPNAME = 'suomibot'
 
 def command_start(update, context):
@@ -132,17 +134,18 @@ def handler_echo(update, context):
     request = re.sub('(.*)', r' \1', update.message.text)
     request = request.lower()
     towrite = messager(request)
-    update.message.reply_text('towrite')
+    update.message.reply_text(request)
+    update.message.reply_text(towrite)
 
 def main():
-    #proxy_settings = {
-    #    'proxy_url': 'socks5://ss-02.s5.ynvv.cc:999',
-    #    'urllib3_proxy_kwargs': {
-    #        'username': '506259567',
-    #        'password': 'MW2YFlKX'
-    #    }
-    #}
-    #updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True, request_kwargs=proxy_settings)
+    proxy_settings = {
+        'proxy_url': 'socks5://ss-02.s5.ynvv.cc:999',
+        'urllib3_proxy_kwargs': {
+            'username': '506259567',
+            'password': 'MW2YFlKX'
+        }
+    }
+    updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True, request_kwargs=proxy_settings)
     updater = Updater('1027945505:AAFjALqO8Pi8gqaLBBweYuVbCUxCqF4RdRo', use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', command_start))
